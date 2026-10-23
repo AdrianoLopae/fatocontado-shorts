@@ -1,0 +1,33 @@
+name: Postar no Instagram
+on:
+  schedule:
+    # Brasília = UTC-3 -> 9h, 12h, 15h, 18h e 21h (mesmos horários do YouTube)
+    - cron: "0 12 * * *"
+    - cron: "0 15 * * *"
+    - cron: "0 18 * * *"
+    - cron: "0 21 * * *"
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+concurrency:
+  group: postar
+  cancel-in-progress: false
+jobs:
+  postar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests
+      - run: python .github/robo/postar.py
+        env:
+          IG_TOKEN: ${{ secrets.IG_TOKEN }}
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+  pagina:
+    needs: postar
+    uses: ./.github/workflows/pages.yml
