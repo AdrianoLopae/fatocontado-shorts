@@ -1,4 +1,4 @@
-name: Postar no Instagram
+name: Postar no Instagram e Facebook
 on:
   schedule:
     # Brasília = UTC-3 -> 9h, 12h, 15h, 18h e 21h (mesmos horários do YouTube)
@@ -28,6 +28,8 @@ jobs:
         env:
           IG_TOKEN: ${{ secrets.IG_TOKEN }}
           IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          FB_PAGE_TOKEN: ${{ secrets.FB_PAGE_TOKEN }}
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
   pagina:
     needs: postar
     uses: ./.github/workflows/pages.yml
