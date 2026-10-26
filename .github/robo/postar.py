@@ -22,7 +22,8 @@ SITE = "https://adrianolopae.github.io/fatocontado-shorts"
 
 def redes():
     r = {}
-    if os.environ.get("IG_TOKEN"):
+    # Instagram desligado enquanto existir o arquivo "instagram_desligado" na raiz do repo
+    if os.environ.get("IG_TOKEN") and not (RAIZ / "instagram_desligado").exists():
         import ig
         r["ig"] = ig.publicar_reel
     if os.environ.get("FB_PAGE_TOKEN"):
