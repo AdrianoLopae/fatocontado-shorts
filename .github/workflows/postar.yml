@@ -7,6 +7,9 @@ on:
     - cron: "0 18 * * *"
     - cron: "0 21 * * *"
     - cron: "0 0 * * *"
+    # 11h e 17h de Brasília (horários dele desde 28/10/2026), uns minutos antes por causa do atraso do GitHub
+    - cron: "52 13 * * *"
+    - cron: "52 19 * * *"
   workflow_dispatch:
 permissions:
   contents: write
