@@ -10,6 +10,9 @@ on:
     # 11h e 17h de Brasília (horários dele desde 28/10/2026), uns minutos antes por causa do atraso do GitHub
     - cron: "52 13 * * *"
     - cron: "52 19 * * *"
+    # 10h e 16h de Brasília (horários dele desde 07/11/2026)
+    - cron: "52 12 * * *"
+    - cron: "52 18 * * *"
   workflow_dispatch:
 permissions:
   contents: write
