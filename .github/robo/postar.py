@@ -48,49 +48,49 @@ def main():
     if not prontos:
         print("nada no horário agora")
         return
-    quando, arq, d = sorted(prontos)[0]
-    url = f"{SITE}/fila/{arq.stem}.mp4"
-    for _ in range(30):
-        if requests.head(url, timeout=20).status_code == 200:
-            break
-        time.sleep(10)
     erro = False
-    for rede, publicar in ligadas.items():
-        if d.get(f"{rede}_id"):
-            continue
-        if d.get("redes") and rede not in d["redes"]:       # item só para algumas redes (ex.: longo vertical só no fb)
-            d[f"{rede}_id"] = "pulado: outra rede"
-            continue
-        if rede == "ig" and (d.get("duracao") or 0) > 175:   # Instagram só recebe o Reels (curto vertical)
-            d["ig_id"] = "pulado: longo"
-            continue
-        try:
-            print(f"{rede}: postando {d['titulo']}")
-            if rede == "fb":
-                th = f"{SITE}/fila/{arq.stem}.jpg" if d.get("thumb") else None
-                d[f"{rede}_id"] = publicar(url, d["legenda"], d["titulo"], d.get("duracao") or 0, th)
-            else:
-                d[f"{rede}_id"] = publicar(url, d["legenda"])
-            print(f"{rede}: publicado {d[f'{rede}_id']}")
-        except Exception:
-            erro = True
-            print(f"{rede}: ERRO\n{traceback.format_exc()}")
-    if all(d.get(f"{r}_id") for r in ligadas):
-        postados = json.loads(POSTADOS.read_text(encoding="utf-8")) if POSTADOS.exists() else []
-        postados.append({k: d.get(k) for k in ("titulo", "youtube_id", "ig_id", "fb_id")} |
-                        {"postado": agora.isoformat(timespec="seconds")})
-        POSTADOS.write_text(json.dumps(postados, ensure_ascii=False, indent=1), encoding="utf-8")
-        arq.unlink()
-        (FILA / f"{arq.stem}.mp4").unlink(missing_ok=True)
-        (FILA / f"{arq.stem}.jpg").unlink(missing_ok=True)
-    else:
-        arq.write_text(json.dumps(d, ensure_ascii=False, indent=1), encoding="utf-8")
+    for quando, arq, d in sorted(prontos):     # posta TODOS os itens do horário (ex.: 17h no fb e no ig)
+        url = f"{SITE}/fila/{arq.stem}.mp4"
+        for _ in range(30):
+            if requests.head(url, timeout=20).status_code == 200:
+                break
+            time.sleep(10)
+        for rede, publicar in ligadas.items():
+            if d.get(f"{rede}_id"):
+                continue
+            if d.get("redes") and rede not in d["redes"]:       # item só para algumas redes (ex.: longo vertical só no fb)
+                d[f"{rede}_id"] = "pulado: outra rede"
+                continue
+            if rede == "ig" and (d.get("duracao") or 0) > 175:   # Instagram só recebe o Reels (curto vertical)
+                d["ig_id"] = "pulado: longo"
+                continue
+            try:
+                print(f"{rede}: postando {d['titulo']}")
+                if rede == "fb":
+                    th = f"{SITE}/fila/{arq.stem}.jpg" if d.get("thumb") else None
+                    d[f"{rede}_id"] = publicar(url, d["legenda"], d["titulo"], d.get("duracao") or 0, th)
+                else:
+                    d[f"{rede}_id"] = publicar(url, d["legenda"])
+                print(f"{rede}: publicado {d[f'{rede}_id']}")
+            except Exception:
+                erro = True
+                print(f"{rede}: ERRO\n{traceback.format_exc()}")
+        if all(d.get(f"{r}_id") for r in ligadas):
+            postados = json.loads(POSTADOS.read_text(encoding="utf-8")) if POSTADOS.exists() else []
+            postados.append({k: d.get(k) for k in ("titulo", "youtube_id", "ig_id", "fb_id")} |
+                            {"postado": agora.isoformat(timespec="seconds")})
+            POSTADOS.write_text(json.dumps(postados, ensure_ascii=False, indent=1), encoding="utf-8")
+            arq.unlink()
+            (FILA / f"{arq.stem}.mp4").unlink(missing_ok=True)
+            (FILA / f"{arq.stem}.jpg").unlink(missing_ok=True)
+        else:
+            arq.write_text(json.dumps(d, ensure_ascii=False, indent=1), encoding="utf-8")
     git = lambda *a: subprocess.run(["git", "-C", str(RAIZ), *a], check=True)
     git("config", "user.name", "robo-fatocontado")
     git("config", "user.email", "robo@users.noreply.github.com")
     git("add", "-A")
     if subprocess.run(["git", "-C", str(RAIZ), "diff", "--cached", "--quiet"]).returncode:
-        git("commit", "-m", f"postado: {d['titulo'][:50]}")
+        git("commit", "-m", f"postado: {len(prontos)} item(ns)")
         git("push")
     if erro:
         raise SystemExit(1)
