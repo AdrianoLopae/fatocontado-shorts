@@ -58,6 +58,9 @@ def main():
     for rede, publicar in ligadas.items():
         if d.get(f"{rede}_id"):
             continue
+        if rede == "ig" and (d.get("duracao") or 0) > 175:   # Instagram só recebe o Reels (curto vertical)
+            d["ig_id"] = "pulado: longo"
+            continue
         try:
             print(f"{rede}: postando {d['titulo']}")
             if rede == "fb":
