@@ -61,7 +61,8 @@ def main():
         try:
             print(f"{rede}: postando {d['titulo']}")
             if rede == "fb":
-                d[f"{rede}_id"] = publicar(url, d["legenda"], d["titulo"], d.get("duracao") or 0)
+                th = f"{SITE}/fila/{arq.stem}.jpg" if d.get("thumb") else None
+                d[f"{rede}_id"] = publicar(url, d["legenda"], d["titulo"], d.get("duracao") or 0, th)
             else:
                 d[f"{rede}_id"] = publicar(url, d["legenda"])
             print(f"{rede}: publicado {d[f'{rede}_id']}")
@@ -75,6 +76,7 @@ def main():
         POSTADOS.write_text(json.dumps(postados, ensure_ascii=False, indent=1), encoding="utf-8")
         arq.unlink()
         (FILA / f"{arq.stem}.mp4").unlink(missing_ok=True)
+        (FILA / f"{arq.stem}.jpg").unlink(missing_ok=True)
     else:
         arq.write_text(json.dumps(d, ensure_ascii=False, indent=1), encoding="utf-8")
     git = lambda *a: subprocess.run(["git", "-C", str(RAIZ), *a], check=True)
