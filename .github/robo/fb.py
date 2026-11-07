@@ -16,7 +16,17 @@ def _ok(r):
     return d
 
 
-def publicar_reel(video_url, descricao):
+def publicar_video(video_url, descricao, titulo):
+    """Vídeo longo (3 a 5 min, melhor monetização) vai como vídeo normal da página, não como Reel."""
+    d = _ok(requests.post(f"https://graph-video.facebook.com/v21.0/{PAGE}/videos", data={
+        "file_url": video_url, "title": titulo, "description": descricao, "published": "true",
+        "access_token": TOKEN}, timeout=600))
+    return _esperar(d["id"])
+
+
+def publicar_reel(video_url, descricao, titulo="", duracao=0):
+    if duracao and duracao > 175:
+        return publicar_video(video_url, descricao, titulo)
     ini = _ok(requests.post(f"{G}/{PAGE}/video_reels", params={"upload_phase": "start", "access_token": TOKEN},
                             timeout=60))
     vid = ini["video_id"]
@@ -25,6 +35,10 @@ def publicar_reel(video_url, descricao):
     _ok(requests.post(f"{G}/{PAGE}/video_reels", params={
         "upload_phase": "finish", "video_id": vid, "video_state": "PUBLISHED", "description": descricao,
         "access_token": TOKEN}, timeout=60))
+    return _esperar(vid)
+
+
+def _esperar(vid):
     for _ in range(60):
         time.sleep(10)
         st = _ok(requests.get(f"{G}/{vid}", params={"fields": "status", "access_token": TOKEN}, timeout=60))

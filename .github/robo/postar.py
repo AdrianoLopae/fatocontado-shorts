@@ -60,7 +60,10 @@ def main():
             continue
         try:
             print(f"{rede}: postando {d['titulo']}")
-            d[f"{rede}_id"] = publicar(url, d["legenda"])
+            if rede == "fb":
+                d[f"{rede}_id"] = publicar(url, d["legenda"], d["titulo"], d.get("duracao") or 0)
+            else:
+                d[f"{rede}_id"] = publicar(url, d["legenda"])
             print(f"{rede}: publicado {d[f'{rede}_id']}")
         except Exception:
             erro = True
