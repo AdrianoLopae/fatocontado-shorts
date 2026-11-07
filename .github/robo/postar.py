@@ -58,6 +58,9 @@ def main():
     for rede, publicar in ligadas.items():
         if d.get(f"{rede}_id"):
             continue
+        if d.get("redes") and rede not in d["redes"]:       # item só para algumas redes (ex.: longo vertical só no fb)
+            d[f"{rede}_id"] = "pulado: outra rede"
+            continue
         if rede == "ig" and (d.get("duracao") or 0) > 175:   # Instagram só recebe o Reels (curto vertical)
             d["ig_id"] = "pulado: longo"
             continue
