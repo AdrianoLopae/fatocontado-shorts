@@ -13,6 +13,13 @@ on:
     # 10h e 16h de Brasília (horários dele desde 07/11/2026)
     - cron: "52 12 * * *"
     - cron: "52 18 * * *"
+    # grade de 08/11/2026: 9h, 12h e 17h de Brasília — passadas extras logo depois (o GitHub atrasa o agendado)
+    - cron: "7 12 * * *"
+    - cron: "23 12 * * *"
+    - cron: "7 15 * * *"
+    - cron: "23 15 * * *"
+    - cron: "7 20 * * *"
+    - cron: "23 20 * * *"
   workflow_dispatch:
 permissions:
   contents: write
