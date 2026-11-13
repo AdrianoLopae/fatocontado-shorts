@@ -1,4 +1,4 @@
-"""Posta no Instagram (@fatocontadobrasil), na página do Facebook e no TikTok (@fatocontado) o Short da fila cujo horário chegou.
+"""Posta no Instagram (@fatocontadobrasil), na página do Facebook e no TikTok (@fatocontadobrasil) o Short da fila cujo horário chegou.
 
 Roda no GitHub Actions nos mesmos horários do YouTube. Fila: fila/NNNN.json + fila/NNNN.mp4
 (o PC manda pra cá). Cada rede só posta se o segredo dela existir (IG_TOKEN / FB_PAGE_TOKEN / TT_REFRESH_TOKEN).
