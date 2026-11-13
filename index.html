@@ -1,6 +1,17 @@
 <!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Fato Contado</title>
-<style>body{font:16px/1.6 system-ui,sans-serif;max-width:720px;margin:40px auto;padding:0 16px;color:#222}</style>
+<style>body{font:16px/1.6 system-ui,sans-serif;max-width:720px;margin:40px auto;padding:0 16px;color:#222}
+.btn{display:inline-block;background:#fe2c55;color:#fff;padding:10px 18px;border-radius:6px;text-decoration:none;font-weight:600}</style>
 <h1>Fato Contado</h1>
 <p>Cortes de podcasts sobre política, história e geopolítica.</p>
 <p><a href="https://www.youtube.com/@fatocontadobrasil">YouTube</a> · <a href="https://www.instagram.com/fatocontadobrasil">Instagram</a> · <a href="https://www.tiktok.com/@fatocontadobrasil">TikTok</a></p>
+<h2>Fato Contado Publisher</h2>
+<p>Ferramenta própria do canal para publicar nossos cortes (1 a 3 min) na nossa conta do TikTok, às 9h e às 17h.</p>
+<p><a class="btn" id="conectar" href="#">Conectar TikTok</a></p>
 <p><a href="privacidade.html">Política de Privacidade</a> · <a href="termos.html">Termos de Uso</a></p>
+<script>
+document.getElementById('conectar').href = 'https://www.tiktok.com/v2/auth/authorize/?' + new URLSearchParams({
+  client_key: 'sbawduaavzkzot0jxj', response_type: 'code',
+  scope: 'user.info.basic,video.upload,video.publish',
+  redirect_uri: 'https://adrianolopae.github.io/fatocontado-shorts/tiktok.html',
+  state: Math.random().toString(36).slice(2)});
+</script>
