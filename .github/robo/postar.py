@@ -91,7 +91,9 @@ def main():
                 print(f"{rede}: ERRO\n{traceback.format_exc()}")
                 if rede == "tt" and agora - quando > timedelta(hours=2):   # TikTok não segura a fila para sempre
                     d["tt_id"] = "erro: desisti depois de 2 h"
-        if all(d.get(f"{r}_id") for r in ligadas):
+        # só sai da fila quando TODAS as redes pedidas no item postaram (rede pedida sem token = continua na fila)
+        faltam = [r for r in (d.get("redes") or []) if not d.get(f"{r}_id")]
+        if all(d.get(f"{r}_id") for r in ligadas) and not faltam:
             postados = json.loads(POSTADOS.read_text(encoding="utf-8")) if POSTADOS.exists() else []
             postados.append({k: d.get(k) for k in ("titulo", "youtube_id", "ig_id", "fb_id", "tt_id", "nc_id")} |
                             {"postado": agora.isoformat(timespec="seconds")})
