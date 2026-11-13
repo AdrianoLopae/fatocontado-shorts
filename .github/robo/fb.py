@@ -5,8 +5,21 @@ import time
 import requests
 
 G = "https://graph.facebook.com/v21.0"
-TOKEN = os.environ["FB_PAGE_TOKEN"]
-PAGE = os.environ["FB_PAGE_ID"]
+TOKEN = os.environ.get("FB_PAGE_TOKEN")
+PAGE = os.environ.get("FB_PAGE_ID")
+
+
+def na_pagina(token, page):
+    """Devolve um publicar_reel que posta em OUTRA página (ex.: New Clipador, segredos NC_PAGE_TOKEN/NC_PAGE_ID)."""
+    def publicar(*a, **k):
+        global TOKEN, PAGE
+        antes = TOKEN, PAGE
+        TOKEN, PAGE = token, page
+        try:
+            return publicar_reel(*a, **k)
+        finally:
+            TOKEN, PAGE = antes
+    return publicar
 
 
 def _ok(r):

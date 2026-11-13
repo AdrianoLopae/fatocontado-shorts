@@ -29,6 +29,9 @@ def redes():
     if os.environ.get("FB_PAGE_TOKEN"):
         import fb
         r["fb"] = fb.publicar_reel
+    if os.environ.get("NC_PAGE_TOKEN"):     # página New Clipador (13/11/2026): só itens com "nc" em "redes"
+        import fb
+        r["nc"] = fb.na_pagina(os.environ["NC_PAGE_TOKEN"], os.environ["NC_PAGE_ID"])
     if os.environ.get("TT_REFRESH_TOKEN") and os.environ.get("TT_CLIENT_KEY"):
         import tt
         r["tt"] = tt.publicar_video
@@ -61,6 +64,9 @@ def main():
         for rede, publicar in ligadas.items():
             if d.get(f"{rede}_id"):
                 continue
+            if rede == "nc" and "nc" not in (d.get("redes") or []):   # New Clipador só recebe o que é dele
+                d["nc_id"] = "pulado: outra página"
+                continue
             if d.get("redes") and rede not in d["redes"]:       # item só para algumas redes (ex.: longo vertical só no fb)
                 d[f"{rede}_id"] = "pulado: outra rede"
                 continue
@@ -72,7 +78,7 @@ def main():
                 continue
             try:
                 print(f"{rede}: postando {d['titulo']}")
-                if rede == "fb":
+                if rede in ("fb", "nc"):
                     th = f"{SITE}/fila/{arq.stem}.jpg" if d.get("thumb") else None
                     d[f"{rede}_id"] = publicar(url, d["legenda"], d["titulo"], d.get("duracao") or 0, th)
                 elif rede == "tt":
@@ -87,7 +93,7 @@ def main():
                     d["tt_id"] = "erro: desisti depois de 2 h"
         if all(d.get(f"{r}_id") for r in ligadas):
             postados = json.loads(POSTADOS.read_text(encoding="utf-8")) if POSTADOS.exists() else []
-            postados.append({k: d.get(k) for k in ("titulo", "youtube_id", "ig_id", "fb_id", "tt_id")} |
+            postados.append({k: d.get(k) for k in ("titulo", "youtube_id", "ig_id", "fb_id", "tt_id", "nc_id")} |
                             {"postado": agora.isoformat(timespec="seconds")})
             POSTADOS.write_text(json.dumps(postados, ensure_ascii=False, indent=1), encoding="utf-8")
             arq.unlink()

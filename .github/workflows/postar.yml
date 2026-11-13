@@ -20,6 +20,10 @@ on:
     - cron: "23 15 * * *"
     - cron: "7 20 * * *"
     - cron: "23 20 * * *"
+    # New Clipador (13/11/2026): 12h e 20h de Brasília (12h já coberto pelos de 15 UTC)
+    - cron: "0 23 * * *"
+    - cron: "7 23 * * *"
+    - cron: "23 23 * * *"
   workflow_dispatch:
 permissions:
   contents: write
@@ -43,6 +47,8 @@ jobs:
           IG_USER_ID: ${{ secrets.IG_USER_ID }}
           FB_PAGE_TOKEN: ${{ secrets.FB_PAGE_TOKEN }}
           FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+          NC_PAGE_TOKEN: ${{ secrets.NC_PAGE_TOKEN }}
+          NC_PAGE_ID: ${{ secrets.NC_PAGE_ID }}
           TT_CLIENT_KEY: ${{ secrets.TT_CLIENT_KEY }}
           TT_CLIENT_SECRET: ${{ secrets.TT_CLIENT_SECRET }}
           TT_REFRESH_TOKEN: ${{ secrets.TT_REFRESH_TOKEN }}
