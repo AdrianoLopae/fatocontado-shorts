@@ -1,7 +1,7 @@
-"""Posta no Instagram (@fatocontadobrasil) e na página do Facebook o Short da fila cujo horário chegou.
+"""Posta no Instagram (@fatocontadobrasil), na página do Facebook e no TikTok (@fatocontado) o Short da fila cujo horário chegou.
 
 Roda no GitHub Actions nos mesmos horários do YouTube. Fila: fila/NNNN.json + fila/NNNN.mp4
-(o PC manda pra cá). Cada rede só posta se o segredo dela existir (IG_TOKEN / FB_PAGE_TOKEN).
+(o PC manda pra cá). Cada rede só posta se o segredo dela existir (IG_TOKEN / FB_PAGE_TOKEN / TT_REFRESH_TOKEN).
 Guarda o id de cada rede no json para nunca postar duas vezes; sai da fila quando todas as redes ligadas postaram.
 """
 import json
@@ -29,6 +29,9 @@ def redes():
     if os.environ.get("FB_PAGE_TOKEN"):
         import fb
         r["fb"] = fb.publicar_reel
+    if os.environ.get("TT_REFRESH_TOKEN") and os.environ.get("TT_CLIENT_KEY"):
+        import tt
+        r["tt"] = tt.publicar_video
     return r
 
 
@@ -64,20 +67,27 @@ def main():
             if rede == "ig" and (d.get("duracao") or 0) > 175:   # Instagram só recebe o Reels (curto vertical)
                 d["ig_id"] = "pulado: longo"
                 continue
+            if rede == "tt" and not 61 <= (d.get("duracao") or 0) <= 178:   # TikTok: só de 1 a 3 min (monetização)
+                d["tt_id"] = "pulado: fora de 1 a 3 min"
+                continue
             try:
                 print(f"{rede}: postando {d['titulo']}")
                 if rede == "fb":
                     th = f"{SITE}/fila/{arq.stem}.jpg" if d.get("thumb") else None
                     d[f"{rede}_id"] = publicar(url, d["legenda"], d["titulo"], d.get("duracao") or 0, th)
+                elif rede == "tt":
+                    d["tt_id"] = publicar(FILA / f"{arq.stem}.mp4", d["legenda"])
                 else:
                     d[f"{rede}_id"] = publicar(url, d["legenda"])
                 print(f"{rede}: publicado {d[f'{rede}_id']}")
             except Exception:
                 erro = True
                 print(f"{rede}: ERRO\n{traceback.format_exc()}")
+                if rede == "tt" and agora - quando > timedelta(hours=2):   # TikTok não segura a fila para sempre
+                    d["tt_id"] = "erro: desisti depois de 2 h"
         if all(d.get(f"{r}_id") for r in ligadas):
             postados = json.loads(POSTADOS.read_text(encoding="utf-8")) if POSTADOS.exists() else []
-            postados.append({k: d.get(k) for k in ("titulo", "youtube_id", "ig_id", "fb_id")} |
+            postados.append({k: d.get(k) for k in ("titulo", "youtube_id", "ig_id", "fb_id", "tt_id")} |
                             {"postado": agora.isoformat(timespec="seconds")})
             POSTADOS.write_text(json.dumps(postados, ensure_ascii=False, indent=1), encoding="utf-8")
             arq.unlink()

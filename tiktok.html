@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fato Contado – TikTok</title>
+<style>body{font:18px/1.6 system-ui,sans-serif;max-width:720px;margin:40px auto;padding:0 16px;color:#222}
+textarea{width:100%;height:120px;font:14px monospace}button{font-size:18px;padding:8px 16px}</style></head>
+<body>
+<h1>Autorização do TikTok</h1>
+<p id="msg">Esta página só mostra o código que o TikTok devolveu. Nada é enviado daqui.</p>
+<textarea id="cod" readonly></textarea>
+<p><button onclick="navigator.clipboard.writeText(document.getElementById('cod').value);this.textContent='Copiado!'">Copiar código</button></p>
+<p>Cole o código na janela do <b>tiktok_autorizar.py</b> e aperte Enter.</p>
+<script>
+const q = new URLSearchParams(location.search);
+const c = q.get('code');
+document.getElementById('cod').value = c || '';
+if (!c) document.getElementById('msg').textContent = 'Sem código: ' + (q.get('error_description') || q.get('error') || 'abra pelo tiktok_autorizar.py');
+</script>
+</body></html>
