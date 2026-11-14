@@ -20,10 +20,11 @@ on:
     - cron: "23 15 * * *"
     - cron: "7 20 * * *"
     - cron: "23 20 * * *"
-    # New Clipador (13/11/2026): 12h e 20h de Brasília (12h já coberto pelos de 15 UTC)
-    - cron: "0 23 * * *"
-    - cron: "7 23 * * *"
-    - cron: "23 23 * * *"
+    # New Clipador (desde 14/11/2026): 10h e 16h de Brasília (52 12 e 52 18 já existem; passadas extras logo depois)
+    - cron: "7 13 * * *"
+    - cron: "23 13 * * *"
+    - cron: "7 19 * * *"
+    - cron: "23 19 * * *"
   workflow_dispatch:
 permissions:
   contents: write
