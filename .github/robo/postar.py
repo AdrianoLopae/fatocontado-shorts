@@ -109,7 +109,15 @@ def main():
     git("add", "-A")
     if subprocess.run(["git", "-C", str(RAIZ), "diff", "--cached", "--quiet"]).returncode:
         git("commit", "-m", f"postado: {len(prontos)} item(ns)")
-        git("push")
+        # outra rodada (tarefa do PC) pode ter dado push no meio: puxa e tenta de novo,
+        # senão o item já postado volta para a fila e sai DUPLICADO (aconteceu em 22/11/2026)
+        for tentativa in range(6):
+            if subprocess.run(["git", "-C", str(RAIZ), "push"]).returncode == 0:
+                break
+            subprocess.run(["git", "-C", str(RAIZ), "pull", "--rebase", "-X", "theirs"])
+            time.sleep(5)
+        else:
+            raise SystemExit("push falhou 6 vezes")
     if erro:
         raise SystemExit(1)
 
