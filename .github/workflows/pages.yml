@@ -23,4 +23,18 @@ jobs:
       - uses: actions/upload-pages-artifact@v5
         with:
           path: .
+      # 24/11/2026: o deploy às vezes "não acha" o artefato que acabou de subir e o site fica
+      # sem os vídeos do dia (o Facebook não consegue baixar). Espera e tenta de novo, até 3 vezes.
       - uses: actions/deploy-pages@v5
+        id: d1
+        continue-on-error: true
+      - if: steps.d1.outcome == 'failure'
+        run: sleep 45
+      - uses: actions/deploy-pages@v5
+        id: d2
+        if: steps.d1.outcome == 'failure'
+        continue-on-error: true
+      - if: steps.d1.outcome == 'failure' && steps.d2.outcome == 'failure'
+        run: sleep 90
+      - uses: actions/deploy-pages@v5
+        if: steps.d1.outcome == 'failure' && steps.d2.outcome == 'failure'
